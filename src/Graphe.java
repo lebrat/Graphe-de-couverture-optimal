@@ -1,13 +1,19 @@
 import java.util.Random;
-
 import grph.Grph;
+
 
 public class Graphe {
 	private static int nb_sommet;
-	private int nb_generateur;
-	private int[] generateur = new int[nb_generateur];
-	private int[] position = new int[nb_generateur];
 	private static int [][] connectivite;
+	//Graphe est la representation du reseau de fil installable dans le satelite
+	//La table de connectivité Cij donne le coup de la connexion entre le somment i et j
+	//zero signifie que la liaison est impossible
+	private int nb_source;
+	private Generateur[] generateurs = new Generateur[nb_source];
+	//Tableau de données sur la position de la source (masse ou generateur) 
+	//Cette classe contient la position de la source ainsi que le nombre
+	//et la position de tous ces clients.
+
 	
 	public static void init(int nb_s,int borne_sup, float densite){
 		nb_sommet = nb_s;
@@ -43,6 +49,6 @@ public class Graphe {
 	public static void main(String[] args)
     {
 	init(20,10,50);
-	print();
+	//print();
     }
 }
