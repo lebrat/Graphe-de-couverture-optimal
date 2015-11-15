@@ -137,10 +137,15 @@ public class Graphe {
 	    DecimalFormat numberFormat = new DecimalFormat("#.00");
 	    for( int i = 0; i < 5; i++){
 	    	for(int j = 0; j < 5; j++){
-	    		System.out.print(numberFormat.format(Dijkstra.sous_connectivite[i][j])+"  ");
+	    		System.out.print(numberFormat.format(Dijkstra.sous_connectivite[i][j])+" ");
 	    	}
 	    	System.out.print("\n");
 	    }
+	    
+	    Kruskal kruskalAlgorithm = new Kruskal(4);
+	    kruskalAlgorithm.kruskalAlgorithm(Dijkstra.sous_connectivite);
+	    
+	    
 	    //Cheminement.afficheChemin(1);
 	    //Cheminement.afficheChemin(2);
 	    //Cheminement.afficheChemin(3);
