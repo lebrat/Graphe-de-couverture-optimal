@@ -3,7 +3,7 @@ import java.util.Vector;
 public class Dijkstra {
 	// creation du graphe
     public static final int INFINITE = 1000;//Integer.MAX_VALUE;
-    public final static int ALPHA_NOTDEF = -999 ;// on met final psk c'est une constante
+    public final static int ALPHA_NOTDEF = -999 ;// on met final c'est une constante
     private int x0;
     private int [] Sommets_proches;//ensemble de sommets dont les distances les plus courtes à la source sont connues au départ seulement Source
     private int [] Predecesseurs;//ensemble des prédécesseur des sommets de 0 à N-1;
@@ -12,16 +12,49 @@ public class Dijkstra {
     // rajout
     private boolean [] noeudsMarqués;
     private static int dimMatrice;//je rajoute ça pour simplifier le code.
+    public static double [][] sous_connectivite;
+    public static int [][][] chemin;
     
-    public Dijkstra(int x, Graphe G){    
-        x0 = x;
-        Graphe g = G;
-        dimMatrice = Graphe.nb_sommet;
-        Sommets_proches = new int [dimMatrice]; //sommets atteints
-        D = new double [dimMatrice]; //distances
-        noeudsMarqués = new boolean[dimMatrice];
-        Predecesseurs = new int [dimMatrice];
-        calculePlusCourtChemin();
+    public Dijkstra(Graphe G, int ... points){    
+    	if (points.length == 0) {
+    	      throw new IllegalArgumentException("No values supplied.");
+    	}
+    	else{
+    		dimMatrice = Graphe.nb_sommet;
+    		sous_connectivite = new double [points.length][points.length];
+    		chemin = new int [points.length][points.length][dimMatrice];
+    		int iter = 0;
+    		for (int x : points) {
+    			System.gc(); // a chaque iteration nous realouons les matrices 
+    			x0 = x;    			
+    			Sommets_proches = new int [dimMatrice]; //sommets atteints
+    			D = new double [dimMatrice]; //distances
+    			noeudsMarqués = new boolean[dimMatrice];
+    			Predecesseurs = new int [dimMatrice];
+    			calculePlusCourtChemin();
+    			int sscon = 0;
+    			for(int p : points){
+    				sous_connectivite[iter][sscon]= D[p];
+    				int source = x0;
+    		        int antécédent = p;
+    		        Vector <Integer> lesNoeudsIntermediaires = new Vector<Integer>();;    		 
+    		        while (antécédent!=source){
+    		            lesNoeudsIntermediaires.add(antécédent);
+    		            antécédent = Predecesseurs[antécédent];
+    		            
+    		        }
+    		        lesNoeudsIntermediaires.add(source);
+    		        int buffer = 0;
+    		        for (int j= lesNoeudsIntermediaires.size()-1; j>=0;j--){    		           
+    		            chemin[x][sscon][buffer]=lesNoeudsIntermediaires.get(j);
+    		        }
+    		        sscon ++;
+    			}
+    			
+    			iter ++; //on remplit la matrice de sous connectivité
+    		}
+    	}
+    	
     }
     
     private void calculePlusCourtChemin(){ 
@@ -43,15 +76,8 @@ public class Dijkstra {
                 n++;
                 Sommets_proches[n]=t;
                 majDistMin(t);
-            } //end if
-        }//end for
-//        for (int i=0; i<dimMatrice;i++){
-//            System.out.print(" S[i]"+S[i]);
-//        }
-//        for (int i=0; i<dimMatrice;i++){
-//            System.out.print(" R["+i+"]"+R[i]);
-//        }
-//        System.out.println();
+            }
+        }
     }
     
     //initDistMin permet de regarder si il y a un chemin entre le point actuel x0 et tous les autres
@@ -64,7 +90,7 @@ public class Dijkstra {
             }
             else {
                 if (x0 != i)
-                D[i] =- G.ALPHA_NOTDEF+1;  //Si le point x0 n'a pas de connexion avec i, on fixe la distance à -999
+                D[i] =- Graphe.ALPHA_NOTDEF+1;  //Si le point x0 n'a pas de connexion avec i, on fixe la distance à -999
             }
         }
     }
@@ -75,13 +101,18 @@ public class Dijkstra {
                     if (D[n] + distanceDsGraphe(n,i)<D[i]){
                         D[i]=D[n] + distanceDsGraphe(n,i);                     
                         Predecesseurs[i]=n;
+                        // TODO
+                        // ici la méthode a effectuer serrait d'arreter le dijkstra
+                        // on fixe la distance maximale des vertexes que l'on veut atteindre
+                        // tous les chemins qui ont une taille supérieur à cette distance
+                        // sont abortés
                     }
                 }
         }
     }
     private double distanceDsGraphe (int t, int s){
-        if (G.existeArc(t, s)){        
-            return G.getDistance(t,s);
+        if (Graphe.existeArc(t,s)){        
+            return Graphe.getDistance(t,s);
         }
         else {
             return INFINITE;
@@ -110,12 +141,7 @@ public class Dijkstra {
     public double longueurChemin (int i){
         return D[i];
     }
-    //fonction à définir min
-    private int min (int i, int j){
-        if (i<=j)
-            return i;
-        else return j;
-    }
+
     public void afficheChemin(int i){
         int source = x0;
         int antécédent = i;
@@ -133,18 +159,7 @@ public class Dijkstra {
         System.out.println();
     }
     
-    public static void main(String[] args) {
-        
-    	int N = Graphe.ALPHA_NOTDEF ;
-        
-        int nb_s_int = 5;
-		int nb_gen = 1;
-		int nb_cli = 2;
-		int [] liens_sous_graphes = {2};
-		float density = 100;
-		double [][] pos_som = { {1,1},{6,5},{5,0},{2,2},{3,4},{1,4},{3,1},{5,3} } ;
-		Graphe g = new Graphe(nb_s_int, nb_gen, nb_cli, liens_sous_graphes, pos_som, density);
-
+    public static void main(String[] args) {       
         
         
     }

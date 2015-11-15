@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Random;
 import grph.Grph;
 
@@ -129,17 +130,24 @@ public class Graphe {
 		int nb_gen = 1;
 		int nb_cli = 2;
 		int [] liens_sous_graphes = {2};
-		float density = 30;
+		float density = 60;
 		double [][] pos_som = { {1,1},{6,5},{5,0},{2,2},{3,4},{1,4},{3,1},{5,3} } ;
 	    Graphe g = new Graphe(nb_s_int, nb_gen, nb_cli, liens_sous_graphes, pos_som, density);
-	    Dijkstra Cheminement = new Dijkstra(0,g);
-	    Cheminement.afficheChemin(1);
-	    Cheminement.afficheChemin(2);
-	    Cheminement.afficheChemin(3);
-	    Cheminement.afficheChemin(4);
-	    Cheminement.afficheChemin(5);
-	    Cheminement.afficheChemin(6);
-	    Cheminement.afficheChemin(7);
+	    Dijkstra Cheminement = new Dijkstra(g,0,1,2,3,4);
+	    DecimalFormat numberFormat = new DecimalFormat("#.00");
+	    for( int i = 0; i < 5; i++){
+	    	for(int j = 0; j < 5; j++){
+	    		System.out.print(numberFormat.format(Dijkstra.sous_connectivite[i][j])+"  ");
+	    	}
+	    	System.out.print("\n");
+	    }
+	    //Cheminement.afficheChemin(1);
+	    //Cheminement.afficheChemin(2);
+	    //Cheminement.afficheChemin(3);
+	    //Cheminement.afficheChemin(4);
+	    //Cheminement.afficheChemin(5);
+	    //Cheminement.afficheChemin(6);
+	    //Cheminement.afficheChemin(7);
 	    
     }
 }
