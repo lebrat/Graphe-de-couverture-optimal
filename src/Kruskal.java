@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -67,6 +68,7 @@ public class Kruskal {
             if (finished)
                 break;
         }
+        DecimalFormat numberFormat = new DecimalFormat("#.00");
         System.out.println("The spanning tree is ");
         for (int i = 1; i <= numberOfVertices; i++)
             System.out.print("\t" + i);
@@ -76,7 +78,7 @@ public class Kruskal {
             System.out.print(source + "\t");
             for (int destination = 1; destination <= numberOfVertices; destination++)
             {
-                System.out.print(spanning_tree[source][destination] + "\t");
+                System.out.print(numberFormat.format(spanning_tree[source][destination]) + "\t");
             }
             System.out.println();
         }

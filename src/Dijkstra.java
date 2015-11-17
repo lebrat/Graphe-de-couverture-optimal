@@ -21,7 +21,7 @@ public class Dijkstra {
     	}
     	else{
     		dimMatrice = Graphe.nb_sommet;
-    		sous_connectivite = new double [points.length][points.length];
+    		sous_connectivite = new double [points.length+1][points.length+1];
     		chemin = new int [points.length][points.length][dimMatrice];
     		int iter = 0;
     		for (int x : points) {
@@ -34,7 +34,7 @@ public class Dijkstra {
     			calculePlusCourtChemin();
     			int sscon = 0;
     			for(int p : points){
-    				sous_connectivite[iter][sscon]= D[p];
+    				sous_connectivite[iter+1][sscon+1]= D[p];
     				int source = x0;
     		        int antécédent = p;
     		        Vector <Integer> lesNoeudsIntermediaires = new Vector<Integer>();;    		 

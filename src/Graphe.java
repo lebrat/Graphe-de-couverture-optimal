@@ -135,14 +135,14 @@ public class Graphe {
 	    Graphe g = new Graphe(nb_s_int, nb_gen, nb_cli, liens_sous_graphes, pos_som, density);
 	    Dijkstra Cheminement = new Dijkstra(g,0,1,2,3,4);
 	    DecimalFormat numberFormat = new DecimalFormat("#.00");
-	    for( int i = 0; i < 5; i++){
-	    	for(int j = 0; j < 5; j++){
+	    for( int i = 1; i < 6; i++){
+	    	for(int j = 1; j < 6; j++){
 	    		System.out.print(numberFormat.format(Dijkstra.sous_connectivite[i][j])+" ");
 	    	}
 	    	System.out.print("\n");
 	    }
 	    
-	    Kruskal kruskalAlgorithm = new Kruskal(4);
+	    Kruskal kruskalAlgorithm = new Kruskal(5);
 	    kruskalAlgorithm.kruskalAlgorithm(Dijkstra.sous_connectivite);
 	    
 	    
