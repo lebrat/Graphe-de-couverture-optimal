@@ -130,19 +130,19 @@ public class Graphe {
 		int nb_gen = 1;
 		int nb_cli = 2;
 		int [] liens_sous_graphes = {2};
-		float density = 60;
+		float density = 100;
 		double [][] pos_som = { {1,1},{6,5},{5,0},{2,2},{3,4},{1,4},{3,1},{5,3} } ;
 	    Graphe g = new Graphe(nb_s_int, nb_gen, nb_cli, liens_sous_graphes, pos_som, density);
-	    Dijkstra Cheminement = new Dijkstra(g,0,1,2,3,4);
+	    Dijkstra Cheminement = new Dijkstra(g,0,1,2,3);
 	    DecimalFormat numberFormat = new DecimalFormat("#.00");
-	    for( int i = 1; i < 6; i++){
-	    	for(int j = 1; j < 6; j++){
+	    for( int i = 1; i < 5; i++){
+	    	for(int j = 1; j < 5; j++){
 	    		System.out.print(numberFormat.format(Dijkstra.sous_connectivite[i][j])+" ");
 	    	}
 	    	System.out.print("\n");
 	    }
 	    
-	    Kruskal kruskalAlgorithm = new Kruskal(5);
+	    Kruskal kruskalAlgorithm = new Kruskal(4);
 	    kruskalAlgorithm.kruskalAlgorithm(Dijkstra.sous_connectivite);
 	    
 	    
