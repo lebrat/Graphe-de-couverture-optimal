@@ -94,7 +94,9 @@ public class EulerCircuit {
 	        found = false;
 	        stack = new Stack<Integer>();
 	        stack.push(vertex);
-	        getEulerTourUtil(vertex);	        
+	        getEulerTourUtil(vertex);
+	        //System.out.println(found);
+	        //System.out.println(" ");	       
 	        return found;
 	    }
 	 

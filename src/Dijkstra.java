@@ -15,7 +15,43 @@ public class Dijkstra {
     public static double [][] sous_connectivite;
     public static int [][][] chemin;
     
-    public Dijkstra(Graphe G, int ... points){    
+    public Dijkstra(Graphe G, boolean up, int ... points){    
+    	if(up){
+    		dimMatrice = Graphe.nb_sommet;
+    		sous_connectivite = new double [dimMatrice+1][dimMatrice+1];
+    		chemin = new int [dimMatrice][dimMatrice][dimMatrice];
+    		int iter = 0;
+    		for (int x=0; x < dimMatrice; x ++) {
+    			System.gc(); // a chaque iteration nous realouons les matrices 
+    			x0 = x;    			
+    			Sommets_proches = new int [dimMatrice]; //sommets atteints
+    			D = new double [dimMatrice]; //distances
+    			noeudsMarqués = new boolean[dimMatrice];
+    			Predecesseurs = new int [dimMatrice];
+    			calculePlusCourtChemin();
+    			int sscon = 0;
+    			for(int p=0; p < dimMatrice; p ++){
+    				sous_connectivite[iter+1][sscon+1]= D[p];
+    				int source = x0;
+    		        int antécédent = p;
+    		        Vector <Integer> lesNoeudsIntermediaires = new Vector<Integer>();;    		 
+    		        while (antécédent!=source){
+    		            lesNoeudsIntermediaires.add(antécédent);
+    		            antécédent = Predecesseurs[antécédent];
+    		            
+    		        }
+    		        lesNoeudsIntermediaires.add(source);
+    		        int buffer = 0;
+    		        for (int j= lesNoeudsIntermediaires.size()-1; j>=0;j--){    		           
+    		            chemin[x][sscon][buffer]=lesNoeudsIntermediaires.get(j);
+    		        }
+    		        sscon ++;
+    			}
+    			
+    			iter ++; //on remplit la matrice de sous connectivité
+    		}
+    	}
+    	else{    
     	if (points.length == 0) {
     	      throw new IllegalArgumentException("No values supplied.");
     	}
@@ -53,6 +89,7 @@ public class Dijkstra {
     			
     			iter ++; //on remplit la matrice de sous connectivité
     		}
+    	}
     	}
     	
     }
