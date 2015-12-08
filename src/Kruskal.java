@@ -42,9 +42,12 @@ public class Kruskal {
             }
         }
         
-        Collections.sort(edges, new EdgeComparator());        
+        Collections.sort(edges, new EdgeComparator());
+        int compteArcs = 1;
+    
         for (Edge edge : edges)
         {
+        	if(compteArcs != numberOfVertices){ 
         	spanning_tree[edge.sourcevertex][edge.destinationvertex] = edge.weight;
             spanning_tree[edge.destinationvertex][edge.sourcevertex] = edge.weight;
             int [][] connectivity = new int[numberOfVertices][numberOfVertices];
@@ -84,6 +87,9 @@ public class Kruskal {
                 edge.weight = -1;
                 continue;
             }
+            else{
+            	compteArcs ++;
+            }
             
             visited[edge.sourcevertex] = 1;
             visited[edge.destinationvertex] = 1;
@@ -100,7 +106,8 @@ public class Kruskal {
             }
             if (finished)
                 break;
-        }        
+        }
+        }
         DecimalFormat numberFormat = new DecimalFormat("#.00");
 //        System.out.println("The spanning tree is ");
         for (int i = 1; i <= numberOfVertices; i++)

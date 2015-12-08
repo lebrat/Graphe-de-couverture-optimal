@@ -158,7 +158,7 @@ public class Graphe {
 		int nbModification;
 		int nnzRow;
 		while(notReduced){
-			nbModification = 0;			
+			nbModification = 0;						
 			for(int i = nbOfTerminalNode; i < MST.length; i ++){
 				nnzRow = 0;			
 				for(int j = 0; j < MST.length; j ++){
@@ -169,7 +169,7 @@ public class Graphe {
 				}
 				if(nnzRow == 1){					
 					// the row has to be deleted
-					for(int j = nbOfTerminalNode; j < MST.length; j++){
+					for(int j = 0; j < MST.length; j++){
 						if(MST[i][j] != 0.0){
 							nbModification ++;
 							MST[i][j] = 0.0;
@@ -183,6 +183,17 @@ public class Graphe {
 				notReduced = false;
 			}
 		}
+		DecimalFormat numberFormat = new DecimalFormat("#.00");
+//      System.out.println("The spanning tree is ");
+      for (int source = 0; source < MST.length; source++)
+      {
+          System.out.print(source + "\t");
+          for (int destination = 0; destination < MST.length; destination++)
+          {
+              System.out.print(numberFormat.format(MST[source][destination]) + "\t");
+          }
+          System.out.println();
+      }
 	}
 	public static void main(String[] args)
     {
@@ -228,7 +239,7 @@ public class Graphe {
 	    System.out.println(costFunction(MST));
 	    doReduction(MST, 2);
 	    System.out.println(costFunction(MST));
-	    //dotgraph(MST);
+	    dotgraph(MST);
 //	    for (int source = 0; source < MST.length; source++)
 //        {
 //            for (int destination = 0; destination < MST.length; destination++)

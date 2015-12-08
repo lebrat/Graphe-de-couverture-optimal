@@ -21,19 +21,19 @@ public class EulerCircuit {
 	                   = adjacencyMatrix[sourceVertex-1][destinationVertex-1];
 	            }
 	        }
-	        //DecimalFormat numberFormat = new DecimalFormat("#.00");
-	        //for (int i = 1; i <= numberOfNodes; i++)
-            //    System.out.print("\t" + i);
-            //System.out.println();
-            //for (int source = 1; source <= numberOfNodes; source++)
-            //{
-            //    System.out.print(source + "\t");
-            //    for (int destination = 1; destination <= numberOfNodes; destination++)
-            //    {
-            //        System.out.print(numberFormat.format(this.adjacencyMatrix[source][destination]) + "\t");
-            //    }
-            //    System.out.println();
-            //}
+//	        DecimalFormat numberFormat = new DecimalFormat("#.00");
+//	        for (int i = 1; i <= numberOfNodes; i++)
+//                System.out.print("\t" + i);
+//            System.out.println();
+//            for (int source = 1; source <= numberOfNodes; source++)
+//            {
+//                System.out.print(source + "\t");
+//                for (int destination = 1; destination <= numberOfNodes; destination++)
+//                {
+//                    System.out.print(numberFormat.format(this.adjacencyMatrix[source][destination]) + "\t");
+//                }
+//                System.out.println();
+//            }
 	    }
 	 
 	    public int degree (int vertex)
