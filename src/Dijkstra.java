@@ -7,24 +7,35 @@ public class Dijkstra {
     private int x0;
     private int [] Sommets_proches;//ensemble de sommets dont les distances les plus courtes à la source sont connues au départ seulement Source
     private int [] Predecesseurs;//ensemble des prédécesseur des sommets de 0 à N-1;
+    private int nbPoints;
     private Graphe G;
-    private double [] D; //tableau des valeurs du meilleur raccourci pour se rendre à chaque sommet
+    private double [] D; //vecteur des valeurs du meilleur raccourci pour se rendre à chaque sommet
+    private double [][] Distances; //tableau des valeurs du meilleur raccourci pour se rendre à chaque sommet
     // rajout
     private boolean [] noeudsMarqués;
     private static int dimMatrice;//je rajoute ça pour simplifier le code.
     public static double [][] sous_connectivite;
     public static int [][][] chemin;
+	private int indice_pointcentral;
+	private double [][] coord_barycentre;
+	
     
     public Dijkstra(Graphe G, int ... points){    
     	if (points.length == 0) {
     	      throw new IllegalArgumentException("No values supplied.");
     	}
     	else{
+    		int compteur = 0;
+    		int compteur2 =0;
+    		int nbPoints = points.length;
+    		coord_barycentre = new double [1][2];    		
     		dimMatrice = Graphe.nb_sommet;
-    		sous_connectivite = new double [points.length+1][points.length+1];
+    		sous_connectivite = new double [points.length+2][points.length+2];
     		chemin = new int [points.length][points.length][dimMatrice];
+    		Distances = new double [points.length][G.nb_sommet];
     		int iter = 0;
     		for (int x : points) {
+    		
     			System.gc(); // a chaque iteration nous realouons les matrices 
     			x0 = x;    			
     			Sommets_proches = new int [dimMatrice]; //sommets atteints
@@ -35,6 +46,7 @@ public class Dijkstra {
     			int sscon = 0;
     			for(int p : points){
     				sous_connectivite[iter+1][sscon+1]= D[p];
+    				
     				int source = x0;
     		        int antécédent = p;
     		        Vector <Integer> lesNoeudsIntermediaires = new Vector<Integer>();;    		 
@@ -49,11 +61,34 @@ public class Dijkstra {
     		            chemin[x][sscon][buffer]=lesNoeudsIntermediaires.get(j);
     		        }
     		        sscon ++;
-    			}
-    			
+    			} 
+
+				
+				for (int a=0; a<D.length; a++)
+					Distances[compteur][a] = D[a];
+				
+    			compteur = compteur + 1;
+    		   			
+    		   			
     			iter ++; //on remplit la matrice de sous connectivité
     		}
     	}
+    	
+  
+              
+    	indice_pointcentral = cherchePointCentral(Distances, Graphe.nb_sommet, points);
+    	coord_barycentre[0][0]=chercheBarycentrex(Graphe.positions_sommet, points);
+    	coord_barycentre[0][1]=chercheBarycentrey(Graphe.positions_sommet, points);
+    	
+    	
+    	for (int m=0; m<points.length; m++){
+    		sous_connectivite[points.length+1][m+1] = Distances[m][indice_pointcentral];
+    		sous_connectivite[m+1][points.length+1] = sous_connectivite[points.length+1][m+1]; 
+    		
+    	}
+    	sous_connectivite[points.length+1][points.length+1] = 0;
+    	
+    	
     	
     }
     
@@ -158,6 +193,42 @@ public class Dijkstra {
         }
         System.out.println();
     }
+    
+    public static int cherchePointCentral(double [][] Distances, int nbPointsTotal, int ... points){
+        int taille = points.length;
+    	double [] stock = new double [nbPointsTotal];
+    	for (int j=0; j<Distances[0].length; j++){
+    		for (int i:points){
+    			stock[j] = stock[j] + Distances[i][j];
+    		}
+     	}
+    	int point_central = 0;
+    	for (int k=1; k<nbPointsTotal; k++){
+    		if (stock[k]<stock[k-1])
+    			 point_central = k;
+		}
+    	return point_central;
+    }
+    
+    public static double chercheBarycentrex (double [][] pos_som, int ... points){
+    	double coordx = 0;
+    	for (int i=0; i<points.length; i++)
+    		coordx = coordx + pos_som[i][0];
+    	coordx = coordx/points.length;
+    	return coordx;
+    }
+    
+    
+    public static double chercheBarycentrey(double [][] pos_som, int ... points){
+    	double coordy = 0;
+    	for (int i=0; i<points.length; i++)
+    		coordy = coordy + pos_som[i][1];
+    	coordy = coordy/points.length;
+    	return coordy;
+    }
+    
+   // public static int chercheSommetProche(double [][] pos_som, coordonnees)
+    
     
     public static void main(String[] args) {       
         

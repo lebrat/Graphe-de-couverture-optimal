@@ -15,10 +15,10 @@ public class Kruskal {
  
     public Kruskal(int numberOfVertices)
     {
-        this.numberOfVertices = numberOfVertices;
-        edges = new LinkedList<Edge>();
-        visited = new int[this.numberOfVertices + 1];
-        spanning_tree = new double[numberOfVertices + 1][numberOfVertices + 1];
+        this.numberOfVertices = numberOfVertices;  										//Nombre de sommets concernés
+        edges = new LinkedList<Edge>();     											//Liste des arcs
+        visited = new int[this.numberOfVertices + 1];									//Marque si le sommet est visité ou non
+        spanning_tree = new double[numberOfVertices + 1][numberOfVertices + 1];			//Spanning tree final
     }
  
     public void kruskalAlgorithm(double[][] sous_connectivite)
@@ -30,6 +30,7 @@ public class Kruskal {
             {
                 if (sous_connectivite[source][destination] != MAX_VALUE && source != destination)
                 {
+                	// Construction de tous les arcs à partir de la sous-connectivité
                     Edge edge = new Edge();
                     edge.sourcevertex = source;
                     edge.destinationvertex = destination;
@@ -39,24 +40,40 @@ public class Kruskal {
                 }
             }
         }
+        
+
+        // On classe les arcs par longueur croissante
         Collections.sort(edges, new EdgeComparator());
+
+        // Utilise la propriété n-1 arcs pour le spanning tree pour l'arret 
+        int compteArcs = 1;
+        
         CheckCycle checkCycle = new CheckCycle();
+        
+        // Cherche si on peut ajouter des arcs ou non
         for (Edge edge : edges)
         {
+        
+        if (compteArcs!=numberOfVertices) {
             spanning_tree[edge.sourcevertex][edge.destinationvertex] = edge.weight;
             spanning_tree[edge.destinationvertex][edge.sourcevertex] = edge.weight;
-            if (checkCycle.checkCycle(spanning_tree, edge.sourcevertex))
-            {
-                spanning_tree[edge.sourcevertex][edge.destinationvertex] = 0;
+   	     
+         
+           
+            if (checkCycle.checkCycle(spanning_tree, edge.sourcevertex)){
+            	spanning_tree[edge.sourcevertex][edge.destinationvertex] = 0;
                 spanning_tree[edge.destinationvertex][edge.sourcevertex] = 0;
                 edge.weight = -1;
                 continue;
-            }
+             }
+            else
+            	compteArcs = compteArcs +1;
+            
             visited[edge.sourcevertex] = 1;
             visited[edge.destinationvertex] = 1;
             for (int i = 0; i < visited.length; i++)
             {
-                if (visited[i] == 0)
+                if (visited[i] == 1)
                 {
                     finished = false;
                     break;
@@ -67,7 +84,11 @@ public class Kruskal {
             }
             if (finished)
                 break;
+          }
         }
+        
+        
+
         DecimalFormat numberFormat = new DecimalFormat("#.00");
         System.out.println("The spanning tree is ");
         for (int i = 1; i <= numberOfVertices; i++)
@@ -82,7 +103,32 @@ public class Kruskal {
             }
             System.out.println();
         }
+        
+        
     }
+
+    
+    public void afficheliste(List<Edge> edges) {
+        for (int i = 0; i<=edges.size()-1; i++){
+        	System.out.print("Arc " + i +" ");
+        	afficheelement(edges.get(i));
+        }
+     }
+    
+    public void afficheelement(Edge edge){
+    	System.out.print(edge.sourcevertex + "-");
+    	System.out.print(edge.destinationvertex + " ");
+    	System.out.print(edge.weight + " ");
+    	System.out.print("\n");
+    }
+    
+    public static int somme_vecteur(int[] vecteur){
+    	int somme = 0;
+    	for (int i=0; i<vecteur.length; i++)
+    		somme = somme + vecteur[i];
+    	return somme;
+    }
+    
  
     public static void main(String... arg)
     {
@@ -172,15 +218,20 @@ class CheckCycle
              i = element;
              while (i <= number_of_nodes)
              {
-                 if (adjacencyMatrix[element][i] >= 1 && visited[i] == 1)
+                 if (adjacencyMatrix[element][i] >= 0.1 && visited[i] == 1)
                  {
                      if (stack.contains(i))
                      {
                          cyclepresent = true;
+                         if(cyclepresent)
+                         	System.out.print("cycle trouvé");
+                         else
+                         	System.out.print("pas de cycle");
+                         System.out.println();
                          return cyclepresent;
                      }
                  }
-                 if (adjacencyMatrix[element][i] >= 1 && visited[i] == 0)
+                 if (adjacencyMatrix[element][i] >= 0.1 && visited[i] == 0)
                  {
                      stack.push(i);
                      visited[i] = 1;
@@ -194,7 +245,12 @@ class CheckCycle
              }
              stack.pop();
         }
+//         if(cyclepresent)
+//        	System.out.print("cycle trouvé");
+//         else
+//         	System.out.print("pas de cycle");
+//         System.out.println();
         return cyclepresent;
-    }
-
+       }   
+    
 }
