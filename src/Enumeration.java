@@ -3,6 +3,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.SpringLayout.Constraints;
+
 import book.set.Iterator;
 import java4unix.impl.Test_IO_Speed_For_File;
 
@@ -40,23 +42,41 @@ public class Enumeration {
 		return connex;
 	}
 	
-	public static <T> Set<Set<T>> powerSet(Set<T> originalSet) {
-	    Set<Set<T>> sets = new HashSet<Set<T>>();
+	public static Set<Set<Integer>> powerSet(Set<Integer> originalSet) {
+	    Set<Set<Integer>> sets = new HashSet<Set<Integer>>();
 	    if (originalSet.isEmpty()) {
-	    	sets.add(new HashSet<T>());
+	    	sets.add(new HashSet<Integer>());
 	    	return sets;
 	    }
-	    List<T> list = new ArrayList<T>(originalSet);
-	    T head = list.get(0);
-	    Set<T> rest = new HashSet<T>(list.subList(1, list.size())); 
-	    for (Set<T> set : powerSet(rest)) {
-	    	Set<T> newSet = new HashSet<T>();
+	    List<Integer> list = new ArrayList<Integer>(originalSet);
+	    Integer head = list.get(0);
+	    Set<Integer> rest = new HashSet<Integer>(list.subList(1, list.size())); 
+	    for (Set<Integer> set : powerSet(rest)) {
+	    	Set<Integer> newSet = new HashSet<Integer>();
 	    	newSet.add(head);
 	    	newSet.addAll(set);
 	    	sets.add(newSet);
 	    	sets.add(set);
 	    }		
 	    return sets;
+	}
+	
+	public static List<ArrayList<Integer>> possibleGraph(Set<Set<Integer>> s, int ... gen){
+		List<ArrayList<Integer>> L = new ArrayList<ArrayList<Integer>>();
+		int compt;
+		for (Set<Integer> si : s){			
+			compt = 0;
+			for( int g : gen){
+				if(si.contains(g)){
+					compt++;
+				}		
+			}
+			if(compt==gen.length){
+				ArrayList<Integer> list = new ArrayList<Integer>(si);
+				L.add(list);
+			}
+		}
+		return L;
 	}
 	
 	
@@ -81,10 +101,9 @@ public class Enumeration {
 		System.out.println("Result expected : true    result given : "+b3);
 		System.out.println("Result expected : false   result given : "+b4);
 	}
-	public static void main(String[] args) {       
-        test_connexity();
-        test_areConnected();
-        Set<Integer> bigset = new HashSet<Integer>();
+	
+	public static void testPossibleGraph(){
+		Set<Integer> bigset = new HashSet<Integer>();
         bigset.add(0);
         bigset.add(1);
         bigset.add(2);
@@ -93,15 +112,24 @@ public class Enumeration {
         bigset.add(5);
         bigset.add(6);
         bigset.add(7);
+        Set<Set<Integer>> s = powerSet(bigset);
+        List<ArrayList<Integer>> L = possibleGraph(s, 0,1,2);
+        System.out.println(L.toString());
+	}
+	public static void main(String[] args) {       
+        //test_connexity();
+        test_areConnected();
+        testPossibleGraph();
+//        List<ArrayList<Integer>> L = new ArrayList<ArrayList<Integer>>();
+//        for (Set<Integer> si : powerSet(bigset)){
+//        	if(si.contains(0)&&si.contains(1)&&si.contains(2)){        		
+//        		ArrayList<Integer> list = new ArrayList<Integer>(si);
+//        		L.add(list);
+//        	}
+//        }
+//        System.out.println(L.toString());
+
         
-        Set<Integer> genset = new HashSet<Integer>();
-        genset.add(0);
-        genset.add(1);
-        genset.add(2);
-        
-        ArrayList<Set<Integer>> L = new ArrayList<Set<Integer>>();
-        for (Set<Integer> si : powerSet(bigset))
-        	L.add(si);
         
     }
 	
