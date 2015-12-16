@@ -110,18 +110,18 @@ public class Kruskal {
         }
         DecimalFormat numberFormat = new DecimalFormat("#.00");
 //        System.out.println("The spanning tree is ");
-        for (int i = 1; i <= numberOfVertices; i++)
-            System.out.print("\t" + i);
-        System.out.println();
-        for (int source = 1; source <= numberOfVertices; source++)
-        {
-            System.out.print(source + "\t");
-            for (int destination = 1; destination <= numberOfVertices; destination++)
-            {
-                System.out.print(numberFormat.format(spanning_tree[source][destination]) + "\t");
-            }
-            System.out.println();
-        }
+//        for (int i = 1; i <= numberOfVertices; i++)
+//            System.out.print("\t" + i);
+//        System.out.println();
+//        for (int source = 1; source <= numberOfVertices; source++)
+//        {
+//            System.out.print(source + "\t");
+//            for (int destination = 1; destination <= numberOfVertices; destination++)
+//            {
+//                System.out.print(numberFormat.format(spanning_tree[source][destination]) + "\t");
+//            }
+//            System.out.println();
+//        }
         double [][] MST = new double[numberOfVertices][numberOfVertices];
         for (int source = 1; source <= numberOfVertices; source++)
         {
