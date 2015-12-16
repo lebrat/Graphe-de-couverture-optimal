@@ -5,7 +5,7 @@ public class DataGenerator {
 
 	private final int _nNode;
 	private final int _nEquipment;
-	private final int[][] _distance;
+	private final double[][] _distance;
 	private final int[] _equipmentIndex;
  
 	public DataGenerator(int _nNode, int _nEquipment) {
@@ -36,7 +36,7 @@ public class DataGenerator {
 		return _nEquipment;
 	}
 
-	public int[][] getDistance() {
+	public double[][] getDistance() {
 		return _distance;
 	}
 

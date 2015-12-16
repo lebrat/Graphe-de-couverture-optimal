@@ -1,3 +1,11 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,6 +14,7 @@ import java.util.Random;
 import java.util.Set;
 
 import javax.swing.SpringLayout.Constraints;
+import javax.swing.text.StyledEditorKit.ForegroundAction;
 
 import book.set.Iterator;
 import grph.algo.msp.KruskalAlgorithm;
@@ -81,19 +90,38 @@ public class Enumeration {
 		}
 		return L;
 	}
-	public static void ennumerateGraph (){
-		int nVertices = 18;
-		ArrayList Best = new ArrayList<Integer>();
+	public static void ennumerateGraph () throws IOException{
+		long ostartTime = System.currentTimeMillis();
+		int nVertices = 14;
+		ArrayList<Integer> Best = new ArrayList<Integer>();
 		double BestCF = Double.MAX_VALUE;
+		
+		long startTime = System.currentTimeMillis();
 		double[][] C = generateTab(nVertices, 0, 100);
-		printTab(C);
+		long stopTime = System.currentTimeMillis();
+		long runTime = stopTime - startTime;
+		System.out.println("Run time (GenerateTab): " + runTime);		
+				
+		startTime = System.currentTimeMillis();
+		FloydWarshallSolver.reduce(C);
+		stopTime = System.currentTimeMillis();
+		runTime = stopTime - startTime;
+		System.out.println("Run time (1 iter FW): " + runTime);
+		
+		saveMat("Mat", C);
 		Set<Integer> bigset = new HashSet<Integer>();
         for(int i = 0; i < nVertices; i ++)
         	bigset.add(i);
-        Set<Set<Integer>> s = powerSet(bigset);
-        List<ArrayList<Integer>> L = possibleGraph(s, 0,1,2);
-        ArrayList<Integer> Test = new ArrayList<Integer>();
         
+        startTime = System.currentTimeMillis();
+        Set<Set<Integer>> s = powerSet(bigset);
+        stopTime = System.currentTimeMillis();
+		runTime = stopTime - startTime;
+		System.out.println("Run time (PowerSet): " + runTime);
+		
+        List<ArrayList<Integer>> L = possibleGraph(s, 0,1,2,3,4);
+        ArrayList<Integer> Test = new ArrayList<Integer>();
+        startTime = System.currentTimeMillis();        
         for(int k = 0; k < L.size(); k++){        	
         	Test = L.get(k);
         	double [][] Creduced = reduceConnectivity(C, Test);    		
@@ -104,12 +132,18 @@ public class Enumeration {
         		if(Graphe.costFunction(MST)<BestCF){
         			System.out.println(BestCF);
         			BestCF = Graphe.costFunction(MST);
-        			Best = Test;
-        			System.out.println(Best.toString());
+        			Best = Test;        			
         		}
-    		}	
-        }        
-        
+    		}
+        }
+        stopTime = System.currentTimeMillis();
+		runTime = stopTime - startTime;
+		System.out.println("Run time [core] (kruskal for each graph): " + runTime);
+        saveList("ExactResult", Best);
+        long ostopTime = System.currentTimeMillis();
+		long orunTime = ostopTime - ostartTime;
+		System.out.println("Run time OVERALL: " + orunTime);
+		
 	}
 	
 	public static double [][] reduceConnectivity( double [][] C, ArrayList<Integer> v ){
@@ -160,6 +194,38 @@ public class Enumeration {
           System.out.println();
       }
 	}
+	public static void saveMat(String fileName, double[][] Mat) throws IOException{
+		FileOutputStream fos = new FileOutputStream(fileName);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(Mat); 
+        fos.close();		
+	}
+	
+	public static double[][] loadMat(String fileName) throws ClassNotFoundException, IOException{
+		FileInputStream fis = new FileInputStream(fileName);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        double [][] obj = (double[][]) ois.readObject();
+        ois.close();
+        return obj;
+	}
+	
+	public static void saveList(String fileName, ArrayList<Integer> L) throws IOException{
+		FileOutputStream fos = new FileOutputStream(fileName);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(L); 
+        fos.close();		
+	}
+	
+	public static ArrayList<Integer> loadList(String fileName) throws ClassNotFoundException, IOException{
+		FileInputStream fis = new FileInputStream(fileName);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        @SuppressWarnings("unchecked")
+		ArrayList<Integer> obj = (ArrayList<Integer>) ois.readObject();
+        ois.close();
+        return obj;
+	}
+	
+	
 	public static void test_connexity(){
 		//toy matrix
 		//double [][] C = {{0,1,0,0,0,0,0,0},{1,0,0,1,0,0,0,0},{0,0,0,0,1,0,0,0},{0,1,0,0,0,0,0,1},{0,0,1,0,0,1,0,0},{0,0,0,0,1,0,1,0},{0,0,0,0,0,1,0,0},{0,0,0,1,0,0,0,0}};
@@ -215,12 +281,58 @@ public class Enumeration {
 		Graphe.dotgraph(MST);
 	}
 	
+	public static void testSave(){
+		double[][] C = generateTab(8, 0, 100);
+		double[][] B = null;
+		ArrayList<Integer> D = null;
+		printTab(C);
+		try {
+			saveMat("Matrix", C);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			B = loadMat("Matrix");
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		printTab(B);
+		
+		ArrayList<Integer> E = new ArrayList<Integer>();
+		E.add(1);
+		E.add(2);
+		E.add(3);
+		E.add(42);
+		System.out.println(E.toString());
+		try {
+			saveList("L", E);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			D = loadList("L");
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(D.toString());
+	}
+	
 	public static void main(String[] args) {       
         //test_connexity();
         //test_areConnected();
         //testPossibleGraph();
 		//testReducedConnectivity();
-		ennumerateGraph();
+		//testSave();
+		try {
+			ennumerateGraph();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		
         
         
