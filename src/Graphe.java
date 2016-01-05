@@ -230,26 +230,40 @@ public class Graphe {
 	
 	public static void main(String[] args)
     {
-		int nb_s_int = 5;
-		int nb_gen = 1;
-		int nb_cli = 2;
+		int nbOfNodes = 100;
+		int nbOfGen = 1;
+		int nbOfCli = 4;
+		double upb = 100;
+		int nbInt = nbOfNodes - nbOfGen - nbOfCli; 
 		int [] liens_sous_graphes = {2};
-		float density = 100;
-		double [][] pos_som = { {1,1},{6,5},{5,0},{2,2},{3,4},{1,4},{3,1},{5,3} } ;
-	    Graphe g = new Graphe(nb_s_int, nb_gen, nb_cli, liens_sous_graphes, pos_som, density);
-	    Dijkstra Cheminement = new Dijkstra(g,false,0,1,2);	    
-	    echangePositionsDansTableau(Cheminement.indice_pointcentral, 3);
+		float density = 10;
+	
+		double valeurTotale = 0;
+		//double [][] pos_som = { {1,1},{6,5},{5,0},{2,2},{3,4},{1,4},{3,1},{5,3} } ;
+		GenerateBigNetwork Network = new GenerateBigNetwork(nbOfNodes, upb);
+	    Graphe g = new Graphe(nbInt, nbOfGen, nbOfCli, liens_sous_graphes, Network.pos_sommet, density);
+	    Dijkstra Cheminement = new Dijkstra(g,false,0,1,2,3,4);	    
+	    echangePositionsDansTableau(Cheminement.indice_pointcentral, 5);
 	    //afficheConnectivite();
-	    Cheminement.afficheChemin(0,1);
+	    
 	    //Cheminement.afficheSousConnectivite();
-	    Dijkstra Cheminementbis = new Dijkstra(g,false,0,1,2,3);	
-	    Cheminementbis.afficheSousConnectivite();
+	    Dijkstra Cheminementbis = new Dijkstra(g,false,0,1,2,3,4,5);	
+	    //Cheminementbis.afficheSousConnectivite();
 	    
 	    
-	    Kruskal kruskalAlgorithm = new Kruskal(4);
-	    kruskalAlgorithm.kruskalAlgorithm(Cheminementbis.sous_connectivite);
+	    Kruskal kruskalAlgorithm = new Kruskal(6);
+	    //kruskalAlgorithm.kruskalAlgorithm(Cheminementbis.sous_connectivite);
 	    
-	    Cheminementbis.afficheChemin(0,3);
+	    
+	    for (int i=0; i<6; i++){
+	    	 for (int j=i; j<6; j++){
+	    		 if(i!=j){
+	 	    		Cheminementbis.afficheChemin(i,j);
+	    		 }
+	    	 }
+	    }
+	    
+	    
 	    
 	    //Cheminement.afficheChemin(1);
 	    //Cheminement.afficheChemin(2);

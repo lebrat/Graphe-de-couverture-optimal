@@ -311,7 +311,12 @@ public class Dijkstra {
     	
     	for(int i=0; i<dimMatrice; i++){
     		if (chemin[pointDepart][pointArrivee][i]>=0){
-    			System.out.print(chemin[pointDepart][pointArrivee][i] + "->");
+    			System.out.print(chemin[pointDepart][pointArrivee][i]);
+    			if(i!=dimMatrice-2){
+    				if(chemin[pointDepart][pointArrivee][i+1]>=0){
+    					System.out.print("->");
+    				}
+    			}
     		}
     	}
     	System.out.println();
