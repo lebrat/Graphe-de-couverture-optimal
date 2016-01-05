@@ -1,6 +1,10 @@
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.Random;
 import grph.Grph;
+
 
 
 public class Graphe {
@@ -123,6 +127,106 @@ public class Graphe {
 	    }
 	 
 	 
+	 public static double costFunction(double [][] MST){
+			double sum = 0.0;
+			for (int i = 0; i < MST.length; i ++){
+				for( int j=i+1;j < MST.length; j ++ ){
+					sum += MST[i][j];
+				}			
+			}
+			return sum;
+		}
+		
+		public static void dotgraph(double[][] MST){
+			PrintWriter writer = null;
+			try {
+				writer = new PrintWriter("graphe.dot", "UTF-8");
+			} catch (FileNotFoundException | UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			writer.println("graph G {");		
+			for (int i = 0; i < MST.length; i ++){
+				for( int j=i+1;j < MST.length; j ++ ){
+					if( MST[i][j] != 0.0){
+						writer.println(String.valueOf(i)+" -- "+String.valueOf(j)+";");
+					}
+				}			
+			}
+			writer.println("}");
+			writer.close();
+		}
+		public static void doReduction (double [][] MST, int nbOfTerminalNode){
+			//With our graph representation the terminal nodes are ordered thus they re occupied the index of our matrix
+			boolean notReduced = true;
+			int nbModification;
+			int nnzRow;
+			while(notReduced){
+				nbModification = 0;						
+				for(int i = nbOfTerminalNode; i < MST.length; i ++){
+					nnzRow = 0;			
+					for(int j = 0; j < MST.length; j ++){
+						if(MST[i][j] != 0.0){
+							nnzRow ++;
+							
+						}
+					}
+					if(nnzRow == 1){					
+						// the row has to be deleted
+						for(int j = 0; j < MST.length; j++){
+							if(MST[i][j] != 0.0){
+								nbModification ++;
+								MST[i][j] = 0.0;
+								MST[j][i] = 0.0;					
+							}
+						}
+					}
+				}
+				if (nbModification == 0){
+					//by now every node is terminal thus we stop improving the MST.
+					notReduced = false;
+				}
+			}
+			DecimalFormat numberFormat = new DecimalFormat("#.00");
+//	      System.out.println("The spanning tree is ");
+	      for (int source = 0; source < MST.length; source++)
+	      {
+	          System.out.print(source + "\t");
+	          for (int destination = 0; destination < MST.length; destination++)
+	          {
+	              System.out.print(numberFormat.format(MST[source][destination]) + "\t");
+	          }
+	          System.out.println();
+	      }
+		}
+
+		
+	    public static void echangePositionsDansTableau (int indice1, int indice2){
+	    	// Cette fonction nous permet d'échanger deux éléments dans le tableau de connectivité, de manière à pouvoir appliquer le Dijkstra avec le barycentre
+	    	double tampon;
+	    	for (int i=0; i<nb_sommet; i++){
+	    		if (i != indice1 && i!= indice2){
+	    		tampon = connectivite[i][indice1];
+	    		connectivite[i][indice1] = connectivite[i][indice2];
+	    		connectivite[i][indice2] = tampon;
+	    		connectivite[indice1][i] = connectivite[i][indice1];
+	    		connectivite[indice2][i] = connectivite[i][indice2];
+	    		}
+	    	}
+	    	
+	    }
+	    
+	    
+	    public static void afficheConnectivite(){
+	    	DecimalFormat numberFormat = new DecimalFormat("#.00");
+	    	for (int i=0; i<nb_sommet; i++){
+	    		for (int j=0; j<nb_sommet; j++){
+	    			System.out.print(numberFormat.format(connectivite[i][j])+" ");
+	    		}
+	    		System.out.println();
+	    	}	    	
+	    }
+	 
 	
 	public static void main(String[] args)
     {
@@ -133,19 +237,19 @@ public class Graphe {
 		float density = 100;
 		double [][] pos_som = { {1,1},{6,5},{5,0},{2,2},{3,4},{1,4},{3,1},{5,3} } ;
 	    Graphe g = new Graphe(nb_s_int, nb_gen, nb_cli, liens_sous_graphes, pos_som, density);
-	    Dijkstra Cheminement = new Dijkstra(g,0,1,2,3);
-	    DecimalFormat numberFormat = new DecimalFormat("#.00");
-	    for( int i = 1; i <= 5; i++){
-	    	for(int j = 1; j <= 5; j++){
-	    		System.out.print(numberFormat.format(Cheminement.sous_connectivite[i][j])+" ");
-	    	}
-	    	System.out.print("\n");
-	    }
+	    Dijkstra Cheminement = new Dijkstra(g,false,0,1,2);	    
+	    echangePositionsDansTableau(Cheminement.indice_pointcentral, 3);
+	    //afficheConnectivite();
+	    Cheminement.afficheChemin(0,1);
+	    //Cheminement.afficheSousConnectivite();
+	    Dijkstra Cheminementbis = new Dijkstra(g,false,0,1,2,3);	
+	    Cheminementbis.afficheSousConnectivite();
 	    
 	    
-	    Kruskal kruskalAlgorithm = new Kruskal(5);
-	    kruskalAlgorithm.kruskalAlgorithm(Cheminement.sous_connectivite);
+	    Kruskal kruskalAlgorithm = new Kruskal(4);
+	    kruskalAlgorithm.kruskalAlgorithm(Cheminementbis.sous_connectivite);
 	    
+	    Cheminementbis.afficheChemin(0,3);
 	    
 	    //Cheminement.afficheChemin(1);
 	    //Cheminement.afficheChemin(2);

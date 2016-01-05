@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Vector;
 
 public class Dijkstra {
@@ -7,7 +8,6 @@ public class Dijkstra {
     private int x0;
     private int [] Sommets_proches;//ensemble de sommets dont les distances les plus courtes à la source sont connues au départ seulement Source
     private int [] Predecesseurs;//ensemble des prédécesseur des sommets de 0 à N-1;
-    private int nbPoints;
     private Graphe G;
     private double [] D; //vecteur des valeurs du meilleur raccourci pour se rendre à chaque sommet
     private double [][] Distances; //tableau des valeurs du meilleur raccourci pour se rendre à chaque sommet
@@ -16,23 +16,75 @@ public class Dijkstra {
     private static int dimMatrice;//je rajoute ça pour simplifier le code.
     public static double [][] sous_connectivite;
     public static int [][][] chemin;
-	private int indice_pointcentral;
+	public int indice_pointcentral;
 	private double [][] coord_barycentre;
 	
     
-    public Dijkstra(Graphe G, int ... points){    
+    public Dijkstra(Graphe G, boolean up, int ... points){    
+    if (up){
+    	int compteur = 0;
+		coord_barycentre = new double [1][2];    		
+		dimMatrice = Graphe.nb_sommet;
+		sous_connectivite = new double [dimMatrice+1][dimMatrice+1];
+		chemin = new int [dimMatrice][dimMatrice][dimMatrice];
+		Distances = new double [dimMatrice][dimMatrice];
+		int iter = 0;
+		for (int x=0; x < dimMatrice; x ++) {
+		
+			System.gc(); // a chaque iteration nous realouons les matrices 
+			x0 = x;    			
+			Sommets_proches = new int [dimMatrice]; //sommets atteints
+			D = new double [dimMatrice]; //distances
+			noeudsMarqués = new boolean[dimMatrice];
+			Predecesseurs = new int [dimMatrice];
+			calculePlusCourtChemin();
+			int sscon = 0;
+			for(int p=0; p < dimMatrice; p ++){
+				sous_connectivite[iter+1][sscon+1]= D[p]; 				
+				int source = x0;
+		        int antécédent = p;
+		        Vector <Integer> lesNoeudsIntermediaires = new Vector<Integer>();;    		 
+		        while (antécédent!=source){
+		            lesNoeudsIntermediaires.add(antécédent);
+		            antécédent = Predecesseurs[antécédent];
+		          //  System.out.print(x + "  " + p + "  " + antécédent + "\n");
+		            
+		        }
+		        lesNoeudsIntermediaires.add(source);
+		        int buffer = 0;
+		        for (int j= lesNoeudsIntermediaires.size()-1; j>=0;j--){    		           
+		            chemin[x][sscon][buffer]=lesNoeudsIntermediaires.get(j);
+		           	buffer++;
+		        }
+		        sscon ++;
+			} 
+
+			
+			for (int a=0; a<D.length; a++)
+				Distances[compteur][a] = D[a];
+			
+			compteur = compteur + 1;
+		   			
+		   			
+			iter ++; //on remplit la matrice de sous connectivité
+			
+			
+	
+		}
+    	
+    }
+    	
+    else{
     	if (points.length == 0) {
     	      throw new IllegalArgumentException("No values supplied.");
     	}
     	else{
     		int compteur = 0;
-    		int compteur2 =0;
-    		int nbPoints = points.length;
     		coord_barycentre = new double [1][2];    		
     		dimMatrice = Graphe.nb_sommet;
-    		sous_connectivite = new double [points.length+2][points.length+2];
+    		sous_connectivite = new double [points.length+1][points.length+1];
     		chemin = new int [points.length][points.length][dimMatrice];
-    		Distances = new double [points.length][G.nb_sommet];
+    		Distances = new double [points.length][Graphe.nb_sommet];
     		int iter = 0;
     		for (int x : points) {
     		
@@ -45,49 +97,63 @@ public class Dijkstra {
     			calculePlusCourtChemin();
     			int sscon = 0;
     			for(int p : points){
-    				sous_connectivite[iter+1][sscon+1]= D[p];
-    				
+    				sous_connectivite[iter+1][sscon+1]= D[p]; 				
     				int source = x0;
     		        int antécédent = p;
     		        Vector <Integer> lesNoeudsIntermediaires = new Vector<Integer>();;    		 
     		        while (antécédent!=source){
     		            lesNoeudsIntermediaires.add(antécédent);
     		            antécédent = Predecesseurs[antécédent];
+    		          //  System.out.print(x + "  " + p + "  " + antécédent + "\n");
     		            
     		        }
     		        lesNoeudsIntermediaires.add(source);
     		        int buffer = 0;
     		        for (int j= lesNoeudsIntermediaires.size()-1; j>=0;j--){    		           
     		            chemin[x][sscon][buffer]=lesNoeudsIntermediaires.get(j);
+    		           	buffer++;
+    		        }
+    		        for (int j=dimMatrice-1; j>lesNoeudsIntermediaires.size()-1;j--){    		           
+    		            chemin[x][sscon][buffer]=-1;
+    		           	buffer++;
     		        }
     		        sscon ++;
     			} 
 
 				
-				for (int a=0; a<D.length; a++)
+				for (int a=0; a<D.length; a++){
 					Distances[compteur][a] = D[a];
+				  	}
 				
+
     			compteur = compteur + 1;
     		   			
     		   			
     			iter ++; //on remplit la matrice de sous connectivité
-    		}
-    	}
+    			
+    			
     	
+    		}
+  		
+    	}	
+    }
+       	
   
               
     	indice_pointcentral = cherchePointCentral(Distances, Graphe.nb_sommet, points);
+    	
+    	
     	coord_barycentre[0][0]=chercheBarycentrex(Graphe.positions_sommet, points);
     	coord_barycentre[0][1]=chercheBarycentrey(Graphe.positions_sommet, points);
     	
     	
-    	for (int m=0; m<points.length; m++){
+ /*   	for (int m=0; m<points.length; m++){
     		sous_connectivite[points.length+1][m+1] = Distances[m][indice_pointcentral];
     		sous_connectivite[m+1][points.length+1] = sous_connectivite[points.length+1][m+1]; 
     		
     	}
     	sous_connectivite[points.length+1][points.length+1] = 0;
-    	
+ */   	
     	
     	
     }
@@ -195,8 +261,7 @@ public class Dijkstra {
     }
     
     public static int cherchePointCentral(double [][] Distances, int nbPointsTotal, int ... points){
-        int taille = points.length;
-    	double [] stock = new double [nbPointsTotal];
+        double [] stock = new double [nbPointsTotal];
     	for (int j=0; j<Distances[0].length; j++){
     		for (int i:points){
     			stock[j] = stock[j] + Distances[i][j];
@@ -204,7 +269,7 @@ public class Dijkstra {
      	}
     	int point_central = 0;
     	for (int k=1; k<nbPointsTotal; k++){
-    		if (stock[k]<stock[k-1])
+   		if (stock[k]<stock[k-1])
     			 point_central = k;
 		}
     	return point_central;
@@ -228,6 +293,30 @@ public class Dijkstra {
     }
     
    // public static int chercheSommetProche(double [][] pos_som, coordonnees)
+    
+    public void afficheSousConnectivite(){
+    	DecimalFormat numberFormat = new DecimalFormat("#.00");
+    	for (int i=1; i<sous_connectivite[0].length; i++){
+    		for (int j=1; j<sous_connectivite[0].length; j++){
+    			System.out.print(numberFormat.format(sous_connectivite[i][j])+" ");
+    		}
+    		System.out.println();
+    	}
+    }
+    
+    public void afficheChemin(int pointDepart, int pointArrivee){
+    	// Pour afficher le chemin trouvé par le Dijkstra, entre deux points
+
+    	System.out.print("Le chemin entre les éléments: " + pointDepart + " et "+ pointArrivee +" est le suivant: ");
+    	
+    	for(int i=0; i<dimMatrice; i++){
+    		if (chemin[pointDepart][pointArrivee][i]>=0){
+    			System.out.print(chemin[pointDepart][pointArrivee][i] + "->");
+    		}
+    	}
+    	System.out.println();
+    }
+
     
     
     public static void main(String[] args) {       
